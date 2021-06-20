@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +14,7 @@ func PublishComment(c *gin.Context) {
 	var publishRequest models.Message
 	c.BindJSON(&publishRequest)
 
-	fmt.Printf("Publishing Message %s", publishRequest)
+	log.Printf("Publishing Message %s \n", publishRequest)
 
 	err := producers.PushCommentToQueue("message", []byte(publishRequest.Text))
 

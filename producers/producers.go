@@ -2,6 +2,7 @@ package producers
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/Shopify/sarama"
 )
@@ -9,12 +10,14 @@ import (
 func ConnectProducer(brokersUrl []string) (sarama.SyncProducer, error) {
 
 	config := sarama.NewConfig()
-	config.Producer.Return.Successes = true
-	config.Producer.RequiredAcks = sarama.WaitForAll
-	config.Producer.Retry.Max = 5
+	// config.Producer.Return.Successes = true
+	// config.Producer.RequiredAcks = sarama.WaitForAll
+	// config.Producer.Retry.Max = 5
 
 	conn, err := sarama.NewSyncProducer(brokersUrl, config)
+
 	if err != nil {
+		log.Fatalln("Open Kafka Connection Failed")
 		return nil, err
 	}
 
@@ -23,7 +26,7 @@ func ConnectProducer(brokersUrl []string) (sarama.SyncProducer, error) {
 
 func PushCommentToQueue(topic string, message []byte) error {
 
-	brokersUrl := []string{"localhost:9092"}
+	brokersUrl := []string{"http://localhost:9092"}
 	producer, err := ConnectProducer(brokersUrl)
 	if err != nil {
 		return err
@@ -38,6 +41,7 @@ func PushCommentToQueue(topic string, message []byte) error {
 
 	partition, offset, err := producer.SendMessage(msg)
 	if err != nil {
+		log.Fatalln("send message failed", err)
 		return err
 	}
 
